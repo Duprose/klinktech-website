@@ -109,7 +109,7 @@
     function step(timestamp) {
       if (start === null) start = timestamp;
       var progress = Math.min((timestamp - start) / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3);
+      var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
       el.textContent = Math.round(eased * target);
       if (progress < 1) {
         window.requestAnimationFrame(step);
@@ -136,6 +136,7 @@
       statObserver.observe(el);
     });
   } else {
+    // Fallback: no IntersectionObserver support
     statNums.forEach(function (el) {
       el.textContent = el.getAttribute("data-count");
     });
@@ -147,10 +148,9 @@
   var contactForm = document.getElementById("contactForm");
   var formStatus = document.getElementById("formStatus");
 
-  // EmailJS Configuration
   var EMAILJS_SERVICE_ID = "service_8naa22f";
-  var EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID"; // <-- Replace with your actual Template ID from EmailJS
-  var EMAILJS_PUBLIC_KEY = "xRw3cmwvnWjjiWwEU";   
+  var EMAILJS_TEMPLATE_ID = "template_h3q0bjh";
+  var EMAILJS_PUBLIC_KEY = "xRw3cmwvnWjjiWwEU";
 
   function statusText(lang, key) {
     var strings = {
@@ -172,11 +172,11 @@
       event.preventDefault();
 
       var lang = root.getAttribute("data-lang") || "en";
+
       contactForm.classList.add("is-submitting");
       formStatus.className = "form-status";
       formStatus.textContent = statusText(lang, "sending");
 
-      // Send form using EmailJS library
       emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, contactForm, EMAILJS_PUBLIC_KEY)
         .then(function () {
           formStatus.className = "form-status is-success";
