@@ -26,28 +26,38 @@
 [data-theme="dark"]{
   --bg:#121824;
   --bg-soft:#161d2c;
+  --bg-surface:#111827;
   --card:#1E2638;
+  --card-bg:rgba(255,255,255,.03);
   --card-border:rgba(255,255,255,.08);
+  --border-color:rgba(255,255,255,.08);
   --text:#F8FAFC;
+  --text-main:#F8FAFC;
   --text-muted:rgba(248,250,252,.68);
   --text-faint:rgba(248,250,252,.45);
   --nav-bg:rgba(18,24,36,.78);
   --shadow:0 20px 60px -25px rgba(0,0,0,.6);
   --input-bg:#161d2c;
+  --accent-color:#00C6FF;
 }
 
 /* ---------- LIGHT THEME ---------- */
 [data-theme="light"]{
   --bg:#F8FAFC;
   --bg-soft:#EEF2F7;
+  --bg-surface:#FFFFFF;
   --card:#FFFFFF;
+  --card-bg:rgba(18,24,36,.02);
   --card-border:rgba(18,24,36,.08);
+  --border-color:rgba(18,24,36,.08);
   --text:#121824;
+  --text-main:#121824;
   --text-muted:rgba(18,24,36,.66);
   --text-faint:rgba(18,24,36,.42);
   --nav-bg:rgba(248,250,252,.82);
   --shadow:0 20px 50px -28px rgba(18,24,36,.22);
   --input-bg:#FFFFFF;
+  --accent-color:#0072FF;
 }
 
 *,*::before,*::after{box-sizing:border-box;}
@@ -335,7 +345,6 @@ button{font-family:inherit; cursor:pointer;}
   0%,100%{ r:7; opacity:1; }
   50%{ r:9.5; opacity:.75; }
 }
-.shield-outline path{ }
 
 /* ============================================================
    ABOUT / STATS
@@ -506,6 +515,63 @@ button{font-family:inherit; cursor:pointer;}
   background-clip:text;
   color:transparent;
   margin-bottom:6px;
+}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testimonials {
+  padding: 6rem 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.testimonial-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.2s ease;
+}
+
+.testimonial-card:hover {
+  border-color: var(--accent-color);
+}
+
+.testimonial-quote {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.author-company {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 /* ============================================================
