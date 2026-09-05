@@ -1,8 +1,8 @@
 /* ==========================================================
    KLINK TECH LTD — SCRIPT
    Handles: theme toggle, language toggle, mobile menu,
-   stat counters, automatic years in field, global Supabase testimonials,
-   and EmailJS contact form submission.
+   stat counters, automatic years in field, global Supabase testimonials
+   (with star ratings), and EmailJS contact form submission.
    ========================================================== */
 (function () {
   "use strict";
@@ -163,7 +163,7 @@
   }
 
   /* ---------------------------------------------------------
-     TESTIMONIALS (Global Supabase Integration)
+     TESTIMONIALS (Global Supabase Integration with Star Ratings)
      --------------------------------------------------------- */
   var SUPABASE_URL = 'https://njzimjmppzcowuafiysy.supabase.co';
   var SUPABASE_ANON_KEY = 'sb_publishable_bd0wvz2bq-PEw_7ZUkWZ1A_bcFnGvlj';
@@ -195,7 +195,12 @@
     reviews.forEach(function (item) {
       var card = document.createElement("article");
       card.className = "testimonial-card";
+      
+      var ratingVal = parseInt(item.rating, 10) || 5;
+      var starsStr = "★★★★★".substring(0, ratingVal) + "☆☆☆☆☆".substring(0, 5 - ratingVal);
+
       card.innerHTML = 
+        '<div class="testimonial-stars" style="color: #f59e0b; font-size: 0.9rem; margin-bottom: 0.5rem;" aria-label="' + ratingVal + ' out of 5 stars">' + starsStr + '</div>' +
         '<p class="testimonial-quote">&ldquo;' + escapeHtml(item.quote || item.text || '') + '&rdquo;</p>' +
         '<div class="testimonial-author">' +
           '<span class="author-name">' + escapeHtml(item.name || '') + '</span>' +
@@ -214,6 +219,7 @@
       e.preventDefault();
       var name = document.getElementById("authorName").value.trim();
       var company = document.getElementById("authorCompany").value.trim();
+      var rating = document.getElementById("testimonialRating").value;
       var quote = document.getElementById("testimonialText").value.trim();
 
       if (!name || !company || !quote) return;
@@ -227,7 +233,12 @@
 
       var { error } = await _supabase
         .from('testimonials')
-        .insert([{ name: name, company: company, quote: quote }]);
+        .insert([{ 
+          name: name, 
+          company: company, 
+          rating: parseInt(rating, 10), 
+          quote: quote 
+        }]);
 
       if (submitBtn) {
         submitBtn.innerHTML = originalBtnText;

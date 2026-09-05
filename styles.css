@@ -550,6 +550,13 @@ button{font-family:inherit; cursor:pointer;}
   border-color: var(--accent-color);
 }
 
+.testimonial-stars {
+  color: #f59e0b;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
 .testimonial-quote {
   font-size: 1.05rem;
   line-height: 1.6;
