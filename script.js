@@ -149,8 +149,8 @@
 
   // EmailJS Configuration
   var EMAILJS_SERVICE_ID = "service_8naa22f";
-  var EMAILJS_TEMPLATE_ID = "REPLACE_WITH_YOUR_TEMPLATE_ID"; // Get this from EmailJS dashboard
-  var EMAILJS_PUBLIC_KEY = "REPLACE_WITH_YOUR_PUBLIC_KEY";   // Get this from EmailJS dashboard
+  var EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID"; // <-- Replace with your actual Template ID from EmailJS
+  var EMAILJS_PUBLIC_KEY = "xRw3cmwvnWjjiWwEU";   
 
   function statusText(lang, key) {
     var strings = {
