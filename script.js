@@ -1,7 +1,8 @@
 /* ==========================================================
    KLINK TECH LTD — SCRIPT
    Handles: theme toggle, language toggle, mobile menu,
-   stat counters, and EmailJS contact form submission.
+   stat counters, automatic years in field, local testimonials,
+   and EmailJS contact form submission.
    ========================================================== */
 (function () {
   "use strict";
@@ -97,6 +98,26 @@
   }
 
   /* ---------------------------------------------------------
+     AUTOMATIC YEARS IN THE FIELD COUNTER (Starts May 2026)
+     --------------------------------------------------------- */
+  var yearsCounterEl = document.getElementById("yearsInFieldCount");
+  if (yearsCounterEl) {
+    var launchDate = new Date(2026, 4, 1); // May 2026 (Month 4 is May in JS)
+    var today = new Date();
+    
+    var calculatedYears = today.getFullYear() - launchDate.getFullYear();
+    var monthDifference = today.getMonth() - launchDate.getMonth();
+    
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < launchDate.getDate())) {
+      calculatedYears--;
+    }
+    
+    var finalYears = Math.max(0, calculatedYears);
+    yearsCounterEl.textContent = finalYears;
+    yearsCounterEl.setAttribute("data-count", finalYears);
+  }
+
+  /* ---------------------------------------------------------
      STAT COUNTERS (animate once, when scrolled into view)
      --------------------------------------------------------- */
   var statNums = document.querySelectorAll(".stat-num");
@@ -139,6 +160,58 @@
     statNums.forEach(function (el) {
       el.textContent = el.getAttribute("data-count");
     });
+  }
+
+  /* ---------------------------------------------------------
+     TESTIMONIALS LOCAL STORAGE SUBMISSION (Instant, No Database)
+     --------------------------------------------------------- */
+  var testimonialForm = document.getElementById("testimonialForm");
+  var testimonialsGrid = document.getElementById("testimonialsGrid");
+
+  if (testimonialForm && testimonialsGrid) {
+    var userTestimonials = JSON.parse(localStorage.getItem("klink_custom_testimonials")) || [];
+
+    // Render any previously saved local reviews on page load
+    userTestimonials.forEach(function (item) {
+      var card = document.createElement("article");
+      card.className = "testimonial-card";
+      card.innerHTML = 
+        '<p class="testimonial-quote">&ldquo;' + escapeHtml(item.text) + '&rdquo;</p>' +
+        '<div class="testimonial-author">' +
+          '<span class="author-name">' + escapeHtml(item.name) + '</span>' +
+          '<span class="author-company">' + escapeHtml(item.company) + '</span>' +
+        '</div>';
+      testimonialsGrid.prepend(card);
+    });
+
+    testimonialForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("authorName").value.trim();
+      var company = document.getElementById("authorCompany").value.trim();
+      var text = document.getElementById("testimonialText").value.trim();
+
+      if (!name || !company || !text) return;
+
+      var newReview = { name: name, company: company, text: text };
+      userTestimonials.unshift(newReview);
+      localStorage.setItem("klink_custom_testimonials", JSON.stringify(userTestimonials));
+
+      // Instantly inject card into grid
+      var card = document.createElement("article");
+      card.className = "testimonial-card";
+      card.innerHTML = 
+        '<p class="testimonial-quote">&ldquo;' + escapeHtml(text) + '&rdquo;</p>' +
+        '<div class="testimonial-author">' +
+          '<span class="author-name">' + escapeHtml(name) + '</span>' +
+          '<span class="author-company">' + escapeHtml(company) + '</span>' +
+        '</div>';
+      testimonialsGrid.prepend(card);
+      testimonialForm.reset();
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
   }
 
   /* ---------------------------------------------------------

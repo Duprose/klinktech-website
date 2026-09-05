@@ -518,7 +518,7 @@ button{font-family:inherit; cursor:pointer;}
 }
 
 /* ============================================================
-   TESTIMONIALS
+   TESTIMONIALS & SUBMISSION FORM
    ============================================================ */
 .testimonials {
   padding: 6rem 0;
@@ -532,6 +532,7 @@ button{font-family:inherit; cursor:pointer;}
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 3rem;
+  margin-bottom: 3.5rem;
 }
 
 .testimonial-card {
@@ -572,6 +573,28 @@ button{font-family:inherit; cursor:pointer;}
 .author-company {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+/* Testimonial Submission Box */
+.testimonial-form-wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-m);
+  padding: 32px;
+  box-shadow: var(--shadow);
+}
+
+.testimonial-form-wrapper h3 {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+
+.testimonial-form-wrapper p {
+  color: var(--text-muted);
+  font-size: .9rem;
+  margin-bottom: 24px;
 }
 
 /* ============================================================
@@ -716,5 +739,5 @@ button{font-family:inherit; cursor:pointer;}
 @media (max-width: 480px){
   .stats-grid{grid-template-columns:1fr;}
   .hero-actions{flex-direction:column; align-items:stretch;}
-  .contact-form{padding:24px;}
+  .contact-form, .testimonial-form-wrapper{padding:24px;}
 }

@@ -136,7 +136,8 @@
       </div>
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-num" data-count="5">0</span><span class="stat-plus">+</span>
+          <!-- Dynamic auto-incrementing years in the field counter starting from May 2026 -->
+          <span class="stat-num" id="yearsInFieldCount">0</span><span class="stat-plus">+</span>
           <span class="stat-label" data-en="Years in the field" data-fr="Années sur le terrain">Years in the field</span>
         </div>
         <div class="stat-card">
@@ -231,8 +232,8 @@
 
       <div class="work-grid">
         <figure class="work-item work-item--video">
-          <video controls playsinline preload="metadata" poster="Images/WhatsApp Image 2026-09-05 at 5.21.10 PM.jpeg">
-            <source src="images/WhatsApp Image 2026-09-05 at 5.21.10 PM.jpeg" type="video/mp4">
+          <video controls playsinline preload="metadata" poster="Images/work-video-1.mp4">
+            <source src="images/work-video-1.mp4" type="video/mp4">
           </video>
           <figcaption data-en="Field installation overview" data-fr="Aperçu des travaux sur le terrain">Field installation overview</figcaption>
         </figure>
@@ -303,15 +304,16 @@
     </div>
   </section>
 
-  <!-- ============ TESTIMONIALS ============ -->
+  <!-- ============ TESTIMONIALS (WITH INSTANT SUBMISSION) ============ -->
   <section class="testimonials" id="testimonials">
     <div class="section-inner">
       <div class="section-head">
         <h2 data-en="What our clients say" data-fr="Ce que disent nos clients">What our clients say</h2>
-        <p data-en="Feedback from organizations we've connected and secured." data-fr="Retours d'expérience des organisations que nous avons connectées et sécurisées.">Feedback from organizations we've connected and secured.</p>
+        <p data-en="Feedback from organizations we've connected and secured, or share your own review below." data-fr="Retours d'expérience des organisations que nous avons connectées, ou partagez votre propre avis ci-dessous.">Feedback from organizations we've connected and secured, or share your own review below.</p>
       </div>
 
-      <div class="testimonials-grid">
+      <!-- Testimonials Dynamic Grid -->
+      <div class="testimonials-grid" id="testimonialsGrid">
         <article class="testimonial-card">
           <p class="testimonial-quote" data-en="&ldquo;Klink Tech installed our Starlink setup and structured our office network seamlessly. Their engineering approach made all the difference.&rdquo;" data-fr="&ldquo;Klink Tech a installé notre système Starlink et structuré notre réseau de bureau sans faille. Leur approche d'ingénierie a fait toute la différence.&rdquo;">
             &ldquo;Klink Tech installed our Starlink setup and structured our office network seamlessly. Their engineering approach made all the difference.&rdquo;
@@ -332,6 +334,28 @@
           </div>
         </article>
       </div>
+
+      <!-- Instant User Testimonial Submission Form (No Database Required) -->
+      <form class="testimonial-form" id="testimonialForm">
+        <h3>Share Your Experience</h3>
+        <div class="form-row--split">
+          <div class="form-row">
+            <label for="authorName">Your Name / Role</label>
+            <input type="text" id="authorName" required placeholder="e.g. Marie Claire">
+          </div>
+          <div class="form-row">
+            <label for="authorCompany">Company / City</label>
+            <input type="text" id="authorCompany" required placeholder="e.g. Tech Lead, Douala">
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="testimonialText">Your Review</label>
+          <textarea id="testimonialText" rows="3" required placeholder="Write your feedback here..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span class="btn-text">Publish Instantly</span>
+        </button>
+      </form>
     </div>
   </section>
 
@@ -431,6 +455,85 @@
     <p data-en="© 2026 Klink Tech Ltd. All rights reserved." data-fr="© 2026 Klink Tech Ltd. Tous droits réservés.">© 2026 Klink Tech Ltd. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- Inline script for automatic years calculation & instant local storage testimonials -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Auto-increment "Years in the field" calculation starting from May 2026
+    const launchDate = new Date(2026, 4, 1); // Month 4 is May (0-indexed)
+    const today = new Date();
+    
+    let years = today.getFullYear() - launchDate.getFullYear();
+    const m = today.getMonth() - launchDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < launchDate.getDate())) {
+      years--;
+    }
+    
+    // Fallback display logic: at least 0 or fractional years if desired, but integer works well.
+    const yearsDisplay = Math.max(0, years);
+    const yearsCounterEl = document.getElementById('yearsInFieldCount');
+    if (yearsCounterEl) {
+      yearsCounterEl.innerText = yearsDisplay;
+    }
+
+    // 2. Instant Testimonials LocalStorage Handler
+    const form = document.getElementById('testimonialForm');
+    const grid = document.getElementById('testimonialsGrid');
+
+    if (form && grid) {
+      // Load user testimonials from localStorage if available
+      let userTestimonials = JSON.parse(localStorage.getItem('klink_custom_testimonials')) || [];
+
+      function renderCustomTestimonials() {
+        // Keep existing hardcoded ones, append user ones to the top
+        userTestimonials.forEach(item => {
+          const card = document.createElement('article');
+          card.className = 'testimonial-card';
+          card.innerHTML = `
+            <p class="testimonial-quote">&ldquo;${escapeHtml(item.text)}&rdquo;</p>
+            <div class="testimonial-author">
+              <span class="author-name">${escapeHtml(item.name)}</span>
+              <span class="author-company">${escapeHtml(item.company)}</span>
+            </div>
+          `;
+          grid.prepend(card);
+        });
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('authorName').value.trim();
+        const company = document.getElementById('authorCompany').value.trim();
+        const text = document.getElementById('testimonialText').value.trim();
+
+        if (!name || !company || !text) return;
+
+        const newReview = { name, company, text };
+        userTestimonials.unshift(newReview);
+        localStorage.setItem('klink_custom_testimonials', JSON.stringify(userTestimonials));
+
+        // Create card instantly on UI
+        const card = document.createElement('article');
+        card.className = 'testimonial-card';
+        card.innerHTML = `
+          <p class="testimonial-quote">&ldquo;${escapeHtml(text)}&rdquo;</p>
+          <div class="testimonial-author">
+            <span class="author-name">${escapeHtml(name)}</span>
+            <span class="author-company">${escapeHtml(company)}</span>
+          </div>
+        `;
+        grid.prepend(card);
+        form.reset();
+      });
+
+      function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
+      renderCustomTestimonials();
+    }
+  });
+</script>
 
 <!-- EmailJS SDK -->
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
