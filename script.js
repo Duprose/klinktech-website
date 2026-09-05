@@ -1,7 +1,7 @@
 /* ==========================================================
    KLINK TECH LTD — SCRIPT
    Handles: theme toggle, language toggle, mobile menu,
-   stat counters, and contact form submission.
+   stat counters, and EmailJS contact form submission.
    ========================================================== */
 (function () {
   "use strict";
@@ -109,7 +109,7 @@
     function step(timestamp) {
       if (start === null) start = timestamp;
       var progress = Math.min((timestamp - start) / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = Math.round(eased * target);
       if (progress < 1) {
         window.requestAnimationFrame(step);
@@ -136,21 +136,21 @@
       statObserver.observe(el);
     });
   } else {
-    // Fallback: no IntersectionObserver support
     statNums.forEach(function (el) {
       el.textContent = el.getAttribute("data-count");
     });
   }
 
   /* ---------------------------------------------------------
-     CONTACT FORM (AJAX submission with graceful fallback)
+     CONTACT FORM (EmailJS Integration)
      --------------------------------------------------------- */
   var contactForm = document.getElementById("contactForm");
   var formStatus = document.getElementById("formStatus");
 
-  // Replace with a real endpoint (e.g. Formspree, a serverless
-  // function, or your own backend) when one is available.
-  var CONTACT_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
+  // EmailJS Configuration
+  var EMAILJS_SERVICE_ID = "service_8naa22f";
+  var EMAILJS_TEMPLATE_ID = "REPLACE_WITH_YOUR_TEMPLATE_ID"; // Get this from EmailJS dashboard
+  var EMAILJS_PUBLIC_KEY = "REPLACE_WITH_YOUR_PUBLIC_KEY";   // Get this from EmailJS dashboard
 
   function statusText(lang, key) {
     var strings = {
@@ -160,8 +160,8 @@
         fr: "Message envoyé — nous vous répondrons rapidement."
       },
       error: {
-        en: "Something went wrong. Please email us directly at contact@klinktech.cm.",
-        fr: "Une erreur est survenue. Merci de nous écrire directement à contact@klinktech.cm."
+        en: "Something went wrong. Please email us directly at klinktechltd@gmail.com.",
+        fr: "Une erreur est survenue. Merci de nous écrire directement à klinktechltd@gmail.com."
       }
     };
     return strings[key][lang] || strings[key].en;
@@ -172,29 +172,18 @@
       event.preventDefault();
 
       var lang = root.getAttribute("data-lang") || "en";
-      var formData = new FormData(contactForm);
-
       contactForm.classList.add("is-submitting");
       formStatus.className = "form-status";
       formStatus.textContent = statusText(lang, "sending");
 
-      fetch(CONTACT_ENDPOINT, {
-        method: "POST",
-        body: formData,
-        headers: { Accept: "application/json" }
-      })
-        .then(function (response) {
-          if (response.ok) {
-            formStatus.className = "form-status is-success";
-            formStatus.textContent = statusText(lang, "success");
-            contactForm.reset();
-          } else {
-            throw new Error("Request failed");
-          }
+      // Send form using EmailJS library
+      emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, contactForm, EMAILJS_PUBLIC_KEY)
+        .then(function () {
+          formStatus.className = "form-status is-success";
+          formStatus.textContent = statusText(lang, "success");
+          contactForm.reset();
         })
         .catch(function () {
-          // Endpoint not configured yet, or the request failed for
-          // another reason (offline, network error, etc).
           formStatus.className = "form-status is-error";
           formStatus.textContent = statusText(lang, "error");
         })
