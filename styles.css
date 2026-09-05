@@ -518,7 +518,7 @@ button{font-family:inherit; cursor:pointer;}
 }
 
 /* ============================================================
-   TESTIMONIALS & SUBMISSION FORM
+   TESTIMONIALS, HORIZONTAL SCROLLER & SUBMISSION FORM
    ============================================================ */
 .testimonials {
   padding: 6rem 0;
@@ -527,15 +527,34 @@ button{font-family:inherit; cursor:pointer;}
   border-bottom: 1px solid var(--border-color);
 }
 
+/* Horizontal Scroll Container */
 .testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
   gap: 2rem;
-  margin-top: 3rem;
-  margin-bottom: 3.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.testimonials-grid::-webkit-scrollbar {
+  height: 6px;
+}
+.testimonials-grid::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 999px;
+}
+.testimonials-grid::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 999px;
 }
 
 .testimonial-card {
+  flex: 0 0 360px;
+  scroll-snap-align: start;
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -582,8 +601,8 @@ button{font-family:inherit; cursor:pointer;}
   color: var(--text-muted);
 }
 
-/* Testimonial Submission Box */
-.testimonial-form-wrapper {
+/* Testimonial Submission Form Wrapper */
+.testimonial-form {
   max-width: 680px;
   margin: 0 auto;
   background: var(--card);
@@ -593,12 +612,12 @@ button{font-family:inherit; cursor:pointer;}
   box-shadow: var(--shadow);
 }
 
-.testimonial-form-wrapper h3 {
+.testimonial-form h3 {
   font-size: 1.25rem;
   margin-bottom: 6px;
 }
 
-.testimonial-form-wrapper p {
+.testimonial-form p {
   color: var(--text-muted);
   font-size: .9rem;
   margin-bottom: 24px;
@@ -746,5 +765,6 @@ button{font-family:inherit; cursor:pointer;}
 @media (max-width: 480px){
   .stats-grid{grid-template-columns:1fr;}
   .hero-actions{flex-direction:column; align-items:stretch;}
-  .contact-form, .testimonial-form-wrapper{padding:24px;}
+  .contact-form, .testimonial-form{padding:24px;}
+  .testimonial-card{flex: 0 0 300px;}
 }

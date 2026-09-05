@@ -306,15 +306,22 @@
     </div>
   </section>
 
-  <!-- ============ TESTIMONIALS (WITH GLOBAL SUPABASE INTEGRATION) ============ -->
+  <!-- ============ TESTIMONIALS (WITH HORIZONTAL SCROLLER & SUPABASE) ============ -->
   <section class="testimonials" id="testimonials">
     <div class="section-inner">
-      <div class="section-head">
-        <h2 data-en="What our clients say" data-fr="Ce que disent nos clients">What our clients say</h2>
-        <p data-en="Feedback from organizations we've connected and secured, or share your own review below." data-fr="Retours d'expérience des organisations que nous avons connectées, ou partagez votre propre avis ci-dessous.">Feedback from organizations we've connected and secured, or share your own review below.</p>
+      <div class="section-head" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 data-en="What our clients say" data-fr="Ce que disent nos clients">What our clients say</h2>
+          <p data-en="Feedback from organizations we've connected and secured, or share your own review below." data-fr="Retours d'expérience des organisations que nous avons connectées, ou partagez votre propre avis ci-dessous.">Feedback from organizations we've connected and secured, or share your own review below.</p>
+        </div>
+        <!-- Horizontal Scroll Control Buttons -->
+        <div class="testimonial-controls" style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-ghost" type="button" aria-label="Scroll left" onclick="document.getElementById('testimonialsGrid').scrollBy({left: -380, behavior: 'smooth'})" style="padding: 0.5rem 1rem; min-width: auto;">←</button>
+          <button class="btn btn-ghost" type="button" aria-label="Scroll right" onclick="document.getElementById('testimonialsGrid').scrollBy({left: 380, behavior: 'smooth'})" style="padding: 0.5rem 1rem; min-width: auto;">→</button>
+        </div>
       </div>
 
-      <!-- Testimonials Dynamic Grid -->
+      <!-- Testimonials Dynamic Horizontal Grid / Scroller -->
       <div class="testimonials-grid" id="testimonialsGrid">
         <article class="testimonial-card">
           <p class="testimonial-quote" data-en="&ldquo;Klink Tech installed our Starlink setup and structured our office network seamlessly. Their engineering approach made all the difference.&rdquo;" data-fr="&ldquo;Klink Tech a installé notre système Starlink et structuré notre réseau de bureau sans faille. Leur approche d'ingénierie a fait toute la différence.&rdquo;">
