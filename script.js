@@ -1,8 +1,6 @@
 /* ==========================================================
    KLINK TECH LTD — SCRIPT
-   Handles: theme toggle, language toggle, mobile menu,
-   stat counters, automatic years in field, global Supabase testimonials
-   (with star ratings), and EmailJS contact form submission.
+   Type: Space Grotesk (display) / Inter (body) / JetBrains Mono (data)
    ========================================================== */
 (function () {
   "use strict";
@@ -102,7 +100,7 @@
      --------------------------------------------------------- */
   var yearsCounterEl = document.getElementById("yearsInFieldCount");
   if (yearsCounterEl) {
-    var launchDate = new Date(2026, 4, 1); // May 2026 (Month 4 is May in JS)
+    var launchDate = new Date(2026, 4, 1);
     var today = new Date();
     
     var calculatedYears = today.getFullYear() - launchDate.getFullYear();
@@ -251,7 +249,7 @@
       } else {
         alert("Thank you! Your testimonial has been published globally.");
         testimonialForm.reset();
-        loadGlobalTestimonials(); // Refresh feed immediately
+        loadGlobalTestimonials();
       }
     });
   }
@@ -262,7 +260,7 @@
   }
 
   /* ---------------------------------------------------------
-     CONTACT FORM (EmailJS Integration)
+     CONTACT FORM (EmailJS Integration via explicit emailjs.send)
      --------------------------------------------------------- */
   var contactForm = document.getElementById("contactForm");
   var formStatus = document.getElementById("formStatus");
@@ -271,7 +269,6 @@
   var EMAILJS_TEMPLATE_ID = "template_h3q0bjh";
   var EMAILJS_PUBLIC_KEY = "xRw3cmwvnWjjiWwEU";
 
-  // Initialize EmailJS explicitly
   if (typeof emailjs !== "undefined") {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   }
@@ -301,7 +298,17 @@
       formStatus.className = "form-status";
       formStatus.textContent = statusText(lang, "sending");
 
-      emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, contactForm)
+      // Explicit parameter mapping for emailjs.send()
+      var templateParams = {
+        from_name: document.getElementById("name") ? document.getElementById("name").value : "",
+        reply_to: document.getElementById("email") ? document.getElementById("email").value : "",
+        phone: document.getElementById("phone") ? document.getElementById("phone").value : "",
+        service: document.getElementById("service") ? document.getElementById("service").value : "",
+        message: document.getElementById("message") ? document.getElementById("message").value : ""
+      };
+
+      // Crucial: emailjs.send() uses the custom payload object instead of sendForm()
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
         .then(function () {
           formStatus.className = "form-status is-success";
           formStatus.textContent = statusText(lang, "success");
