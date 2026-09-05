@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Supabase Client SDK CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -304,7 +306,7 @@
     </div>
   </section>
 
-  <!-- ============ TESTIMONIALS (WITH INSTANT SUBMISSION) ============ -->
+  <!-- ============ TESTIMONIALS (WITH GLOBAL SUPABASE INTEGRATION) ============ -->
   <section class="testimonials" id="testimonials">
     <div class="section-inner">
       <div class="section-head">
@@ -335,7 +337,7 @@
         </article>
       </div>
 
-      <!-- Instant User Testimonial Submission Form (No Database Required) -->
+      <!-- Global Testimonial Submission Form -->
       <form class="testimonial-form" id="testimonialForm">
         <h3>Share Your Experience</h3>
         <div class="form-row--split">
@@ -456,87 +458,9 @@
   </div>
 </footer>
 
-<!-- Inline script for automatic years calculation & instant local storage testimonials -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1. Auto-increment "Years in the field" calculation starting from May 2026
-    const launchDate = new Date(2026, 4, 1); // Month 4 is May (0-indexed)
-    const today = new Date();
-    
-    let years = today.getFullYear() - launchDate.getFullYear();
-    const m = today.getMonth() - launchDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < launchDate.getDate())) {
-      years--;
-    }
-    
-    // Fallback display logic: at least 0 or fractional years if desired, but integer works well.
-    const yearsDisplay = Math.max(0, years);
-    const yearsCounterEl = document.getElementById('yearsInFieldCount');
-    if (yearsCounterEl) {
-      yearsCounterEl.innerText = yearsDisplay;
-    }
-
-    // 2. Instant Testimonials LocalStorage Handler
-    const form = document.getElementById('testimonialForm');
-    const grid = document.getElementById('testimonialsGrid');
-
-    if (form && grid) {
-      // Load user testimonials from localStorage if available
-      let userTestimonials = JSON.parse(localStorage.getItem('klink_custom_testimonials')) || [];
-
-      function renderCustomTestimonials() {
-        // Keep existing hardcoded ones, append user ones to the top
-        userTestimonials.forEach(item => {
-          const card = document.createElement('article');
-          card.className = 'testimonial-card';
-          card.innerHTML = `
-            <p class="testimonial-quote">&ldquo;${escapeHtml(item.text)}&rdquo;</p>
-            <div class="testimonial-author">
-              <span class="author-name">${escapeHtml(item.name)}</span>
-              <span class="author-company">${escapeHtml(item.company)}</span>
-            </div>
-          `;
-          grid.prepend(card);
-        });
-      }
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('authorName').value.trim();
-        const company = document.getElementById('authorCompany').value.trim();
-        const text = document.getElementById('testimonialText').value.trim();
-
-        if (!name || !company || !text) return;
-
-        const newReview = { name, company, text };
-        userTestimonials.unshift(newReview);
-        localStorage.setItem('klink_custom_testimonials', JSON.stringify(userTestimonials));
-
-        // Create card instantly on UI
-        const card = document.createElement('article');
-        card.className = 'testimonial-card';
-        card.innerHTML = `
-          <p class="testimonial-quote">&ldquo;${escapeHtml(text)}&rdquo;</p>
-          <div class="testimonial-author">
-            <span class="author-name">${escapeHtml(name)}</span>
-            <span class="author-company">${escapeHtml(company)}</span>
-          </div>
-        `;
-        grid.prepend(card);
-        form.reset();
-      });
-
-      function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-      }
-
-      renderCustomTestimonials();
-    }
-  });
-</script>
-
-<!-- EmailJS SDK -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- External EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!-- Main Application Script -->
 <script src="script.js"></script>
 </body>
 </html>

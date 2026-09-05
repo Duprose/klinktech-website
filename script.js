@@ -1,7 +1,7 @@
 /* ==========================================================
    KLINK TECH LTD — SCRIPT
    Handles: theme toggle, language toggle, mobile menu,
-   stat counters, automatic years in field, local testimonials,
+   stat counters, automatic years in field, global Supabase testimonials,
    and EmailJS contact form submission.
    ========================================================== */
 (function () {
@@ -163,55 +163,91 @@
   }
 
   /* ---------------------------------------------------------
-     TESTIMONIALS LOCAL STORAGE SUBMISSION (Instant, No Database)
+     TESTIMONIALS (Global Supabase Integration)
      --------------------------------------------------------- */
-  var testimonialForm = document.getElementById("testimonialForm");
+  var SUPABASE_URL = 'https://njzimjmppzcowuafiysy.supabase.co';
+  var SUPABASE_ANON_KEY = 'sb_publishable_bd0wvz2bq-PEw_7ZUkWZ1A_bcFnGvlj';
+  var _supabase = (typeof supabase !== "undefined") ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
   var testimonialsGrid = document.getElementById("testimonialsGrid");
+  var testimonialForm = document.getElementById("testimonialForm");
 
-  if (testimonialForm && testimonialsGrid) {
-    var userTestimonials = JSON.parse(localStorage.getItem("klink_custom_testimonials")) || [];
+  async function loadGlobalTestimonials() {
+    if (!testimonialsGrid || !_supabase) return;
 
-    // Render any previously saved local reviews on page load
-    userTestimonials.forEach(function (item) {
+    var { data: reviews, error } = await _supabase
+      .from('testimonials')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error("Error loading testimonials from Supabase:", error);
+      return;
+    }
+
+    testimonialsGrid.innerHTML = "";
+
+    if (!reviews || reviews.length === 0) {
+      testimonialsGrid.innerHTML = '<p style="color:var(--text-muted);">No testimonials yet. Be the first to share your experience!</p>';
+      return;
+    }
+
+    reviews.forEach(function (item) {
       var card = document.createElement("article");
       card.className = "testimonial-card";
       card.innerHTML = 
-        '<p class="testimonial-quote">&ldquo;' + escapeHtml(item.text) + '&rdquo;</p>' +
+        '<p class="testimonial-quote">&ldquo;' + escapeHtml(item.quote || item.text || '') + '&rdquo;</p>' +
         '<div class="testimonial-author">' +
-          '<span class="author-name">' + escapeHtml(item.name) + '</span>' +
-          '<span class="author-company">' + escapeHtml(item.company) + '</span>' +
+          '<span class="author-name">' + escapeHtml(item.name || '') + '</span>' +
+          '<span class="author-company">' + escapeHtml(item.company || 'Client') + '</span>' +
         '</div>';
-      testimonialsGrid.prepend(card);
+      testimonialsGrid.appendChild(card);
     });
+  }
 
-    testimonialForm.addEventListener("submit", function (e) {
+  if (testimonialsGrid && _supabase) {
+    loadGlobalTestimonials();
+  }
+
+  if (testimonialForm && _supabase) {
+    testimonialForm.addEventListener("submit", async function (e) {
       e.preventDefault();
       var name = document.getElementById("authorName").value.trim();
       var company = document.getElementById("authorCompany").value.trim();
-      var text = document.getElementById("testimonialText").value.trim();
+      var quote = document.getElementById("testimonialText").value.trim();
 
-      if (!name || !company || !text) return;
+      if (!name || !company || !quote) return;
 
-      var newReview = { name: name, company: company, text: text };
-      userTestimonials.unshift(newReview);
-      localStorage.setItem("klink_custom_testimonials", JSON.stringify(userTestimonials));
+      var submitBtn = testimonialForm.querySelector('button[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.textContent = "Publishing...";
+        submitBtn.disabled = true;
+      }
 
-      // Instantly inject card into grid
-      var card = document.createElement("article");
-      card.className = "testimonial-card";
-      card.innerHTML = 
-        '<p class="testimonial-quote">&ldquo;' + escapeHtml(text) + '&rdquo;</p>' +
-        '<div class="testimonial-author">' +
-          '<span class="author-name">' + escapeHtml(name) + '</span>' +
-          '<span class="author-company">' + escapeHtml(company) + '</span>' +
-        '</div>';
-      testimonialsGrid.prepend(card);
-      testimonialForm.reset();
+      var { error } = await _supabase
+        .from('testimonials')
+        .insert([{ name: name, company: company, quote: quote }]);
+
+      if (submitBtn) {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+      }
+
+      if (error) {
+        console.error("Supabase Insert Error:", error);
+        alert("Failed to submit testimonial globally. Please try again.");
+      } else {
+        alert("Thank you! Your testimonial has been published globally.");
+        testimonialForm.reset();
+        loadGlobalTestimonials(); // Refresh feed immediately
+      }
     });
+  }
 
-    function escapeHtml(str) {
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
   /* ---------------------------------------------------------
