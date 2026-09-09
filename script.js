@@ -104,7 +104,7 @@
      --------------------------------------------------------- */
   var yearsCounterEl = document.getElementById("yearsInFieldCount");
   if (yearsCounterEl) {
-    var launchDate = new Date(2026, 4, 1);
+    var launchDate = new Date(2025, 4, 1);
     var today = new Date();
     var calculatedYears = today.getFullYear() - launchDate.getFullYear();
     var monthDifference = today.getMonth() - launchDate.getMonth();
