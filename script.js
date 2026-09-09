@@ -217,56 +217,53 @@
   }
 
   /* ---------------------------------------------------------
-     EMAILJS CONTACT FORM (Universal Parameter Mapping)
+     CONTACT FORM WHATSAPP (Universal Parameter Mapping)
      --------------------------------------------------------- */
-  var contactForm = document.getElementById("contactForm");
+ var contactForm = document.getElementById("contactForm");
   var formStatus = document.getElementById("formStatus");
 
-  var EMAILJS_SERVICE_ID = "service_8naa22f";
-  var EMAILJS_TEMPLATE_ID = "template_h3q0bjh";
-  var EMAILJS_PUBLIC_KEY = "_QXYR9wQjBpNtsZcn";
+  // Replace with your business WhatsApp number (with country code, no + or spaces, e.g., 2376XXXXXXXX)
+  var WHATSAPP_NUMBER = "237697443878"; 
 
   if (contactForm) {
     contactForm.addEventListener("submit", function (event) {
       event.preventDefault();
       var lang = root.getAttribute("data-lang") || "en";
 
-      contactForm.classList.add("is-submitting");
-      formStatus.className = "form-status";
-      formStatus.textContent = lang === "fr" ? "Envoi en cours…" : "Sending…";
-
-      var clientEmail = document.getElementById("email") ? document.getElementById("email").value : "";
-      var clientName = document.getElementById("name") ? document.getElementById("name").value : "";
-      var clientPhone = document.getElementById("phone") ? document.getElementById("phone").value : "";
+      var clientName = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+      var clientEmail = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+      var clientPhone = document.getElementById("phone") ? document.getElementById("phone").value.trim() : "";
       var clientService = document.getElementById("service") ? document.getElementById("service").value : "";
-      var clientMessage = document.getElementById("message") ? document.getElementById("message").value : "";
+      var clientMessage = document.getElementById("message") ? document.getElementById("message").value.trim() : "";
 
-      var templateParams = {
-        to_email: clientEmail,
-        email: clientEmail,
-        reply_to: clientEmail,
-        name: clientName,
-        from_name: clientName,
-        service: clientService,
-        title: clientService,
-        phone: clientPhone,
-        message: clientMessage
-      };
+      // Format the message for WhatsApp
+      var text = (lang === "fr") 
+        ? "Bonjour Klink Tech,\n\n" +
+          "*Nom:* " + clientName + "\n" +
+          "*E-mail:* " + clientEmail + "\n" +
+          "*Téléphone:* " + clientPhone + "\n" +
+          "*Service:* " + clientService + "\n" +
+          "*Message:* " + clientMessage
+        : "Hello Klink Tech LTD,\n\n" +
+          "*Name:* " + clientName + "\n" +
+          "*Email:* " + clientEmail + "\n" +
+          "*Phone:* " + clientPhone + "\n" +
+          "*Service:* " + clientService + "\n" +
+          "*Message:* " + clientMessage;
 
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
-        .then(function () {
-          formStatus.className = "form-status is-success";
-          formStatus.textContent = lang === "fr" ? "Message envoyé !" : "Message sent — we'll get back to you shortly.";
-          contactForm.reset();
-        })
-        .catch(function (error) {
-          console.error("EmailJS Error:", error);
-          formStatus.className = "form-status is-error";
-          formStatus.textContent = lang === "fr" ? "Erreur d'envoi." : "Something went wrong. Please email us directly.";
-        })
-        .finally(function () {
-          contactForm.classList.remove("is-submitting");
-        });
+      // Encode the text for a URL
+      var encodedText = encodeURIComponent(text);
+      var whatsappURL = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodedText;
+
+      // Open WhatsApp in a new tab
+      window.open(whatsappURL, "_blank");
+
+      if (formStatus) {
+        formStatus.className = "form-status is-success";
+        formStatus.textContent = lang === "fr" ? "Redirection vers WhatsApp…" : "Redirecting to WhatsApp…";
+      }
+      
+      contactForm.reset();
     });
   }
 
